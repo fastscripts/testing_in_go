@@ -8,7 +8,7 @@ import (
 	"path"
 	"time"
 
-	"github.com/fastscripts/testing_in_go/data"
+	"github.com/fastscripts/testing_in_go/pkg/data"
 )
 
 var pathToTemplates = "./templates/"
