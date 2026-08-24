@@ -12,4 +12,9 @@ test:
 
 run:
 	@echo "Starting the application..."
-	@go run ./cmd/web
+	@go run ./cmd/web 
+
+init_sqlite:
+	@echo "Initializing SQLite database..."
+	@sqlite3 test.sqlite < sql/users_sqlite.sql
+	@echo "SQLite database initialized."	
