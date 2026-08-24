@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/fastscripts/testing_in_go/data"
 )
 
 func Test_application_addIPToConttext(t *testing.T) {
@@ -74,4 +76,41 @@ func Test_application_ipFRomContext(t *testing.T) {
 	if ip != "192.168.1.1" {
 		t.Errorf("expected ip to be %s, got %s", "192.168.1.1", ip)
 	}
+}
+
+func Test_app_auth(t *testing.T) {
+	nextHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+	})
+
+	var tests = []struct {
+		name            string
+		isAuthenticated bool
+	}{
+		{"authenticated", true},
+		{"not authenticated", false},
+	}
+
+	for _, e := range tests {
+		t.Run(e.name, func(t *testing.T) {
+			handlerToTest := app.auth(nextHandler)
+			req := httptest.NewRequest("GET", "/", nil)
+			req = addContextAndSessionToRequest(req, app)
+			if e.isAuthenticated {
+				app.Session.Put(req.Context(), "user", data.User{ID: 1, Email: "test@example.com"})
+			}
+			rr := httptest.NewRecorder()
+			handlerToTest.ServeHTTP(rr, req)
+
+			if e.isAuthenticated && rr.Code != http.StatusOK {
+				t.Errorf("expected status code %d, got %d", http.StatusOK, rr.Code)
+			}
+
+			if !e.isAuthenticated && rr.Code != http.StatusTemporaryRedirect {
+				t.Errorf("expected status code %d, got %d", http.StatusTemporaryRedirect, rr.Code)
+			}
+
+		})
+	}
+
 }
