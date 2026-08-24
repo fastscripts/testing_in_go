@@ -102,13 +102,13 @@ func (app *application) Login(w http.ResponseWriter, r *http.Request) {
 
 	// authenticate user
 	if !app.authenticate(r, user, password) {
+		// if not authenticated then redirect to login page with error message
 		app.Session.Put(r.Context(), "error", "invalid login credentials")
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
-	// if not authenticated then redirect to login page with error message
-	// privent fiaxation attack
 
+	// privent fiaxation attack
 	_ = app.Session.RenewToken(r.Context())
 
 	// store success message in session
